@@ -1,0 +1,808 @@
+#----------------------------------------------------Project Title: Employee Management & Payroll System----------------
+
+CREATE DATABASE MAJ_PRO;
+USE MAJ_PRO;
+
+
+CREATE TABLE DEPARTMENTS (
+    dept_id INT PRIMARY KEY AUTO_INCREMENT,
+    dept_name VARCHAR(100) NOT NULL,
+    location VARCHAR(100)
+);
+
+
+CREATE TABLE EMPLOYEES (
+    emp_id INT PRIMARY KEY AUTO_INCREMENT, 
+    emp_name VARCHAR(100) NOT NULL,        
+    email VARCHAR(100) UNIQUE NOT NULL,    
+    phone VARCHAR(20),                    
+    hire_date DATE,                        
+    status VARCHAR(20) DEFAULT 'Active',    
+    dept_id INT,                            
+    FOREIGN KEY (dept_id) REFERENCES DEPARTMENTS(dept_id) 
+);
+
+
+SELECT * FROM ATTENDANCE;
+
+CREATE TABLE ATTENDANCE (
+    att_id INT PRIMARY KEY AUTO_INCREMENT, 
+    att_date DATE NOT NULL,                
+    status VARCHAR(20),                    -- (Present/Absent/Leave)
+    emp_id INT,                           
+    FOREIGN KEY (emp_id) REFERENCES EMPLOYEES(emp_id) -- 
+);
+
+
+
+
+CREATE TABLE SALARY (
+    sal_id INT PRIMARY KEY AUTO_INCREMENT, 
+    basic DECIMAL(10,2) NOT NULL,          
+    hra DECIMAL(10,2),                     
+    bonus DECIMAL(10,2),                   
+    emp_id INT UNIQUE,                   
+    FOREIGN KEY (emp_id) REFERENCES EMPLOYEES(emp_id) 
+);
+
+
+
+CREATE TABLE ROLES (
+    role_id INT PRIMARY KEY AUTO_INCREMENT, 
+    role_name VARCHAR(50) NOT NULL          
+);
+
+
+
+
+CREATE TABLE USERS (
+    user_id INT PRIMARY KEY AUTO_INCREMENT, 
+    username VARCHAR(50) UNIQUE NOT NULL,   
+    password VARCHAR(255) NOT NULL         
+);
+
+
+
+
+CREATE TABLE USER_ROLES (
+    user_id INT , -- LINK TO USER TABLE
+    role_id INT , -- LINK TO ROLES TABLE 
+    PRIMARY KEY (USER_ID , ROLE_ID), -- BOTH ARE PRIMARY KEYS
+    FOREIGN KEY (user_id) REFERENCES USERS(user_id),
+    FOREIGN KEY (role_id) REFERENCES ROLES(role_id)
+);
+
+
+
+SHOW TABLES;
+
+
+
+INSERT INTO DEPARTMENTS VALUES
+(101,'HR','DELHI'),
+(102,'IT','NOIDA'),
+(103,'MANAGEMENT','GURGAON'),
+(104,'DATABASE ADMINISTRATORS','DELHI'),
+(105,'FINANCE','NOIDA');
+
+
+INSERT INTO EMPLOYEES VALUES
+(1,'RADHA','RADHA33@GMAIL.COM','9876543210','2021-08-02','ACTIVE',101),
+(2,'SACHIN YADAV','SACHIN528@GMAIL.COM','9149122123','2020-05-15','NOT ACTIVE',102),
+(3,'URMILA SHARMA','URMILASH659@GMAIL.COM','6960109806','2022-11-11','ACTIVE',103),
+(4,'ISHU KHANNA','ISH768@GMAIL.COM','9928345682','2024-09-05','ACTIVE',104),
+(5,'MAYANK RAWAT','MAYUU34@GMAIL.COM','9897302561','2025-06-21','ACTIVE',105),
+(6,'ANKIT VERMA','ANKITV12@GMAIL.COM','9012345678','2019-03-18','NOT ACTIVE',101),
+(7,'POOJA SINGH','POOJAS45@GMAIL.COM','9123456780','2020-12-10','ACTIVE',102),
+(8,'ROHIT KUMAR','ROHITK99@GMAIL.COM','9345678123','2023-01-25','ACTIVE',103),
+(9,'NEHA GUPTA','NEHAG88@GMAIL.COM','9988776655','2021-06-30','NOT ACTIVE',104),
+(10,'AMAN SHARMA','AMAN007@GMAIL.COM','9090909090','2022-09-14','ACTIVE',105);
+
+
+
+INSERT INTO SALARY VALUES
+(51,22000,2000,500,1),
+(52,25000,1000,250,2),
+(53,30000,8000,500,3),
+(54,45000,1200,700,4),
+(55,42000,1000,600,5),
+(56,52000,1500,1000,6),
+(57,20000,2300,1500,7),
+(58,33000,2500,700,8),
+(59,22000,2000,300,9),
+(60,28000,5000,800,10);
+
+
+
+INSERT INTO ATTENDANCE (att_date, status, emp_id) VALUES 
+('2024-01-01', 'Present', 1),
+('2024-01-01', 'Present', 2),
+('2024-01-01', 'Absent', 3),
+('2024-01-01', 'Present', 4),
+('2024-01-01', 'Leave', 5),
+('2024-01-02', 'Present', 1),
+('2024-01-02', 'Present', 6),
+('2024-01-02', 'Absent', 7),
+('2024-01-02', 'Present', 8),
+('2024-01-02', 'Present', 9),
+('2024-01-02', 'Present', 10),
+('2024-01-03', 'Leave', 1),
+('2024-01-03', 'Present', 2),
+('2024-01-03', 'Present', 3),
+('2024-01-03', 'Absent', 6);
+
+
+SELECT * FROM EMPLOYEES;
+
+#------------------------------------BEGINNER LEVEL----------------------
+# 4. Display only employee names and email IDs. 
+SELECT EMP_NAME , EMAIL FROM EMPLOYEES;
+
+# 5. Find employees whose status is Active. 
+SELECT * FROM EMPLOYEES WHERE STATUS = "ACTIVE";
+
+# 6. Display employees who joined after 2024-01-01.
+SELECT * FROM EMPLOYEES WHERE HIRE_DATE > '2024-01-01';
+
+
+# 7. Rename the column phone to mobile_no. 
+ALTER TABLE EMPLOYEES CHANGE PHONE MOBILE_NO VARCHAR(100);
+
+SET SQL_SAFE_UPDATES = 0;
+
+# 8. Delete employees whose status is Inactive. 
+SET FOREIGN_KEY_CHECKS = 0;
+DELETE FROM  EMPLOYEES WHERE  STATUS = 'NOT ACTIVE';
+SET FOREIGN_KEY_CHECKS = 1;
+
+# ----------------------------------Intermediate Level (WHERE, JOIN, GROUP BY) ---------------------------------
+SELECT * FROM EMPLOYEES;
+SELECT * FROM DEPARTMENTS;
+## show not active employees
+
+INSERT INTO EMPLOYEES (emp_id, emp_name, email, mobile_no, hire_date, status, dept_id) VALUES 
+(2, 'SACHIN YADAV', 'SACHIN528@GMAIL.COM', '9149122123', '2020-05-15', 'NOT ACTIVE', 102),
+(6, 'ANKIT VERMA', 'ANKITV12@GMAIL.COM', '9012345678', '2019-03-18', 'NOT ACTIVE', 101),
+(9, 'NEHA GUPTA', 'NEHAG88@GMAIL.COM', '9988776655', '2021-06-30', 'NOT ACTIVE', 104);
+
+# 9. Display employee name along with department name. 
+SELECT EMP_NAME , DEPT_NAME FROM EMPLOYEES
+JOIN
+DEPARTMENTS ON 
+EMPLOYEES.DEPT_ID = DEPARTMENTS.DEPT_ID;
+
+
+# 10.  Find the number of employees in each department. 
+SELECT DEPT_NAME , COUNT(EMP_ID) FROM EMPLOYEES
+join
+DEPARTMENTS ON
+EMPLOYEES.DEPT_ID = DEPARTMENTS.DEPT_ID GROUP BY DEPT_NAME;
+
+
+
+# 11. Display departments having more than 2 employees.
+SELECT DEPT_NAME , COUNT(EMP_ID) AS TOTAL_EMP FROM EMPLOYEES
+join
+DEPARTMENTS ON
+EMPLOYEES.DEPT_ID = DEPARTMENTS.DEPT_ID  GROUP BY DEPT_NAME HAVING COUNT(EMP_ID)>2;
+
+
+
+# 12.  Find employees who do not belong to any department.
+select emp_name from employees
+left join
+departments on
+EMPLOYEES.DEPT_ID = DEPARTMENTS.DEPT_ID where dept_name is null;
+
+select * from employees;
+select * from salary;
+
+# 13. Display employees who do not have salary records. 
+select emp_name, basic from employees
+left join
+salary on
+employees.emp_id = salary.emp_id  where basic is null;
+
+
+#14.  Calculate total salary (basic + hra + bonus) for each employee.
+select emp_name, sum(basic+hra+bonus) as total_salary from employees
+join
+salary on 
+employees.emp_id = salary.emp_id group by emp_name;
+
+
+ 
+ #15. Find the highest paid employee. 
+ select emp_name, sum(basic+hra+bonus) as highest_paid_emp from employees
+ join
+ salary on
+ employees.emp_id = salary.emp_id  group by emp_name order by highest_paid_emp desc limit 1;
+
+select * from attendance;
+
+#16.  Display employees who were absent at least once.
+select distinct emp_name  from employees 
+join
+attendance on
+employees.emp_id = attendance.emp_id where attendance.status = 'absent';
+
+
+#------------------------------------------------Subquery & Advanced SELECT-----------------------------
+
+
+# 17.  Find employees earning more than the average salary. 
+select emp_name, sum(basic+hra+bonus)  as total_sal from employees
+join
+salary on
+employees.emp_id = salary.emp_id group by emp_name having sum(basic+hra+bonus) >(select avg(basic+hra+bonus) as avg_sal from salary) ;
+
+
+
+# 18.  Display employees who earn the maximum salary. 
+select emp_name, sum(basic+hra+bonus) as total_sal from employees
+join
+salary on
+employees.emp_id = salary.emp_id group by emp_name having sum(basic+hra+bonus) = (select max(basic+hra+bonus) as max_sal from salary);
+
+
+
+
+# 19. Find departments where the average salary is greater than 40,000.
+select dept_name, avg(basic+hra+bonus) as avg_sal  from departments
+join
+employees on
+departments.dept_id = employees.dept_id
+join
+salary on
+employees.emp_id = salary.emp_id group by dept_name having  avg(basic+hra+bonus)> 40000;
+
+
+
+
+# 20. Display employees who have never taken leave. 
+SELECT EMP_NAME FROM EMPLOYEES WHERE EMP_ID NOT IN (SELECT EMP_ID FROM ATTENDANCE WHERE STATUS = 'LEAVE');
+
+
+# 21.  Find employees who joined before the oldest attendance record. 
+SELECT EMP_NAME,HIRE_DATE FROM EMPLOYEES WHERE HIRE_DATE <
+(SELECT MIN(ATT_DATE)AS START_DATE FROM ATTENDANCE);
+
+
+
+#------------------------------------------------Stored Procedures & Functions -----------------------------------------
+SELECT * FROM EMPLOYEES;
+
+# 22.  Write a stored procedure to fetch employees by department ID.
+DELIMITER $$
+CREATE PROCEDURE FETC_EMP (IN D_ID INT)
+BEGIN
+     SELECT EMP_NAME FROM EMPLOYEES  WHERE DEPT_ID = D_ID;
+     END $$
+     DELIMITER ;
+
+CALL FETC_EMP(105);
+
+     SELECT * FROM EMPLOYEES;
+     DESC EMPLOYEES;
+
+# 23. Write a stored procedure to insert a new employee. 
+DELIMITER $$
+CREATE PROCEDURE INSERT_DATA(IN E_ID INT,
+							 IN E_NAME VARCHAR(100),
+                             IN E_MAIL VARCHAR(100),
+                             IN E_MOB VARCHAR(100),
+                             IN E_HIRE DATE,
+                             IN E_STATUS VARCHAR(20),
+                             IN E_D_ID INT)
+BEGIN
+    INSERT INTO EMPLOYEES (EMP_ID,EMP_NAME,EMAIL,MOBILE_NO,HIRE_DATE,STATUS,DEPT_ID)
+    VALUES(E_ID,E_NAME,E_MAIL,E_MOB,E_HIRE,E_STATUS,E_D_ID);
+    END $$
+    DELIMITER ;
+
+CALL INSERT_DATA(15,"RAKHI SAMANT","RAKHI255@GMAIL.COM","6395958560","2025-11-11","ACTIVE",103)
+
+
+
+
+# 24. Create a function to calculate total salary. 
+DELIMITER $$
+CREATE FUNCTION CAL_TOTAL_SAL(BASIC INT,HRA INT,BONUS INT)
+RETURNS INT
+DETERMINISTIC 
+BEGIN
+     RETURN (BASIC+HRA+BONUS) ;
+     END $$ 
+     DELIMITER ;
+     
+-- CALL THIS FUNCTION
+SELECT CAL_TOTAL_SAL(22000,2000,1000);
+
+SELECT * FROM EMPLOYEES;
+SELECT * FROM SALARY;
+
+# 25. Call the function inside a SELECT query. 
+SELECT 
+    EMP_NAME, 
+    CAL_TOTAL_SAL(BASIC, HRA, BONUS) AS FINAL_SALARY 
+FROM EMPLOYEES
+JOIN
+SALARY ON
+EMPLOYEES.EMP_ID = SALARY.EMP_ID  ;
+
+SELECT * FROM EMPLOYEES;
+
+
+# 26.  Write a procedure to update employee status. 
+DELIMITER $$
+CREATE PROCEDURE UPDATE_STATUS(IN E_ID INT,IN STATUS_UP VARCHAR(20))
+BEGIN
+     UPDATE EMPLOYEES
+     SET STATUS = STATUS_UP 
+     WHERE EMP_ID = E_ID;
+		
+    END $$
+    DELIMITER ;
+ 
+ CALL UPDATE_STATUS(3,'PROMOTED')
+ 
+ 
+ #-------------------------------------------TRIGGERS-------------------------------------------
+ 
+# 27. Create a trigger to prevent salary insertion below 10,000. 
+DELIMITER $$
+CREATE TRIGGER CHECK_MIN_SAL 
+BEFORE INSERT ON SALARY
+FOR EACH ROW 
+BEGIN
+     IF NEW.BASIC < 10000 THEN
+     SIGNAL SQLSTATE '45000'
+     SET MESSAGE_TEXT = ' THIS EMPLOYE SALARY CAN NOT BE INSERTED ';
+     END IF ;
+END $$
+DELIMITER ;
+INSERT INTO SALARY (EMP_ID, BASIC, HRA, BONUS) VALUES (502, 12000, 2000, 1000);
+
+
+SELECT * FROM EMPLOYEES;
+
+# 28. Create a trigger to log deleted employee records.
+CREATE TABLE LOG_DELETE(
+EMP_ID INT,
+EMP_NAME VARCHAR(100),
+STATUS VARCHAR(20),
+DELETED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+DELIMITER $$
+CREATE TRIGGER DEL_RECORD
+AFTER DELETE  ON EMPLOYEES
+FOR EACH ROW
+BEGIN
+    INSERT INTO LOG_DELETE(EMP_ID,EMP_NAME,STATUS)
+    VALUES(OLD.EMP_ID,OLD.EMP_NAME,OLD.STATUS);
+    END $$
+    DELIMITER ;
+
+
+-- check trigger
+delete from employees where emp_id = 15;
+select * from LOG_DELETE;
+
+
+
+
+
+
+# 29.  Create a trigger to auto-update status when employee is deleted. 
+
+DELIMITER $$
+CREATE TRIGGER DEL_RECORD_status_deleted
+AFTER DELETE  ON EMPLOYEES
+FOR EACH ROW
+BEGIN
+    INSERT INTO LOG_DELETE(EMP_ID,EMP_NAME,STATUS)
+    VALUES(OLD.EMP_ID,OLD.EMP_NAME,'deleted');
+    END $$
+    DELIMITER ;
+
+
+# 30. Create a trigger to prevent duplicate email insertion. 
+DELIMITER $$
+CREATE TRIGGER  INS_DUP_EMAIL
+BEFORE INSERT ON EMPLOYEES
+FOR EACH ROW
+BEGIN
+    IF  (SELECT COUNT(*) FROM EMPLOYEES WHERE EMAIL = NEW.EMAIL) > 0 THEN
+    SIGNAL SQLSTATE '45000'
+     SET MESSAGE_TEXT = ' DUPLICATE DATA IS NOT ALLOWED ';
+     END IF ;
+    
+    END $$
+    DELIMITER ;
+
+
+
+
+#--------------------------------------Transactions (TCL) ----------------------------------------------------------------
+
+
+
+# 31.  Write a transaction to insert employee and salary together.
+START TRANSACTION;
+INSERT INTO EMPLOYEES VALUES
+(11,"MITLESH GARG","MITHUU258@GMAIL.COM","6352528694","2026-01-15","ACTIVE",104);
+
+INSERT INTO SALARY VALUES
+(61,80000,1500,1000,11);
+
+COMMIT;
+
+
+
+# 32. Rollback the transaction if salary insert fails. 
+ START TRANSACTION;
+
+
+INSERT INTO EMPLOYEES VALUES 
+(55, "FFFINAL SUCCESS", "sUuccess@gmail.com", "1334567890", "2026-01-20", "ACTIVE", 104);
+
+
+SAVEPOINT step1;
+
+
+INSERT INTO SALARY (SAL_ID, BASIC, HRA, BONUS, EMP_ID)
+VALUES (200, 70000, 2000, 1000, 999); 
+
+
+ROLLBACK TO step1;
+
+
+COMMIT;
+
+
+SELECT * FROM EMPLOYEES WHERE EMP_ID = 55;    
+
+
+
+
+# 33. Demonstrate SAVEPOINT usage. 
+ START TRANSACTION;
+
+
+INSERT INTO EMPLOYEES VALUES (56, "DEMO USER", "demo@gmail.com", "1234567890", "2026-01-20", "ACTIVE", 104);
+
+
+SAVEPOINT point_a;
+
+
+INSERT INTO SALARY VALUES (500, 60000, 1000, 500, 999); 
+
+
+ROLLBACK TO point_a;
+
+COMMIT;   
+
+
+
+
+
+# 34. Explain what happens if COMMIT is not executed. 
+/* If COMMIT is not executed, all changes made during the transaction are rolled back and not permanently saved.  */
+
+
+
+#-----------------------------------------Views & Indexes-------------------------------------------------------
+SELECT * FROM DEPARTMENTS;
+
+
+# 35. Create a view for HR showing employee & department details. 
+CREATE VIEW HR_SHOW_EMP_DEPT AS 
+SELECT EMP_ID,EMP_NAME,EMAIL, DEPT_NAME FROM EMPLOYEES
+JOIN
+DEPARTMENTS ON
+EMPLOYEES.DEPT_ID = DEPARTMENTS.DEPT_ID;
+
+-- CHECK VIEW
+SELECT * FROM HR_SHOW_EMP_DEPT;
+
+SELECT * FROM SALARY;
+
+# 36.  Create a view to show monthly payroll report. 
+CREATE VIEW MONTHLY_PAYROLL_REPORT AS 
+SELECT EMP_ID, BASIC,HRA,BONUS, (BASIC+HRA+BONUS) AS TOTAL_PAYROLL FROM SALARY;
+
+SELECT * FROM MONTHLY_PAYROLL_REPORT;
+
+
+
+# 37.  Create an index on employee name. 
+CREATE INDEX EMP_NAME
+ON EMPLOYEES (EMP_NAME);
+
+-- CHECK INDEX
+SHOW INDEX FROM EMPLOYEES;
+
+
+
+
+# 38.  Identify which columns should be indexed and why. 
+/*Indexes should be created on primary keys, 
+foreign keys, and frequently searched columns to improve query performance and speed up data retrieval.*/
+
+
+
+# 39. Drop an index and explain the impact. 
+/* Dropping an index removes the performance optimization for read 
+operations, making data retrieval slower, but it improves write performance and reduces storage usage.*/
+
+
+#---------------------------------------------------Date & Time Queries -------------------------------------
+
+
+# 40. Find employees who joined in the last 12 months.
+SELECT * FROM EMPLOYEES WHERE HIRE_DATE > DATE_SUB(NOW() , INTERVAL 1 YEAR ) ORDER BY HIRE_DATE DESC;
+
+
+# 41. Calculate employee experience in years. 
+SELECT EMP_NAME, HIRE_DATE, TIMESTAMPDIFF(YEAR,HIRE_DATE,NOW()) AS EXPERIENCE FROM EMPLOYEES;
+
+select * from attendance;
+
+
+# 42. Display attendance count per month. 
+select month(att_date) as _month,count(*) as att_count from attendance group by month(att_date);
+
+select * from attendance;
+
+# 43.  Find employees absent more than 3 days in a month.
+SELECT 
+    EMP_ID, 
+    MONTHNAME(ATT_DATE) AS Month, 
+    COUNT(*) AS Absent_Days
+FROM ATTENDANCE
+WHERE STATUS = 'Absent'  
+GROUP BY EMP_ID, Month
+HAVING COUNT(*) > 3;
+
+
+
+ # ---------------------------------------------Performance & Optimization ---------------------------------------------------
+
+/* 44. Use EXPLAIN to analyze a join query.
+EXPLAIN is used to analyze the execution plan of a SQL query.
+When used with a JOIN query, it helps us understand how MySQL retrieves data from multiple tables.
+It provides information such as:
+1. Order in which tables are accessed
+2. Type of join used
+3. Indexes used or not used
+4. Number of rows scanned
+5. Query optimization details
+
+ */
+
+
+
+
+# 45.  Rewrite a slow query using indexes. 
+/* When searching for an employee by name in a large table without an index, MySQL
+ performs a Full Table Scan. This means it checks every single row one by one, which is very slow.
+-- Slow Query:
+SELECT * FROM EMPLOYEES WHERE EMP_NAME = 'Mitlesh';
+
+To speed up this query, we create an Index on the EMP_NAME column.
+This creates a sorted look-up path (like a book's index) so SQL can find the record instantly.
+
+-- Optimization:
+CREATE INDEX idx_emp_name ON EMPLOYEES(EMP_NAME);
+
+-- Optimized Query (Same syntax, but runs faster):
+SELECT * FROM EMPLOYEES WHERE EMP_NAME = 'Mitlesh'; */
+
+
+
+
+
+# 46.  Difference between clustered and non-clustered indexes (MySQL context).
+/*   
+1. Clustered Index
+Definition: A Clustered index defines the physical order in which data is stored in the table.
+
+Key Feature: The index and the actual data rows are stored together in the same B-Tree structure. 
+The "leaves" of the index contain the actual data.
+
+Limit: There can be only one Clustered index per table.
+
+MySQL Context: In InnoDB, the Primary Key automatically becomes the Clustered index. 
+If no Primary Key is defined, MySQL uses the first Unique Not Null key, or an internal hidden ID.
+
+
+2. Non-Clustered Index (Secondary Index)
+Definition: A Non-Clustered index is a separate structure from the data rows.
+ It contains a copy of the indexed columns and a pointer to the actual data.
+
+Key Feature: The "leaves" of this index do not contain the actual data; 
+instead, they contain the Primary Key value of the row.
+ MySQL then uses that Primary Key to find the actual data in the Clustered index (a process called "Lookup").
+
+Limit: You can have multiple Non-Clustered indexes on a single table.
+
+Example: Any index created using CREATE INDEX on columns like EMP_NAME or EMAIL is a Non-Clustered index.
+
+
+*/
+
+
+
+
+
+# 47.  When should you avoid indexes? 
+/* 1. Small Tables
+2.Frequent Writes
+3. Columns with Low Selectivity
+4. Temporary or Short-lived Tables
+5. Columns Rarely Queried
+
+
+
+
+---------------------------------------Security & DCL---------------------------------------------    */
+
+
+
+# 48. Create a user for HR with read-only access. 
+
+create user 'hr_user'@'localhost' identified by 'hr_pass123';
+
+-- GIVE AUTHORITY
+
+GRANT SELECT ON MAJ_PRO .* TO 'hr_user'@'localhost';
+
+-- FOR REFERESH PERMISSION
+
+FLUSH PRIVILEGES;
+
+-- FOR CHECKING QUERRY IS CORRECT WORK OR NOT 
+/* 1. OPEN  COMMAND PROMPT 
+2. PASTE - cd "C:\Program Files\MySQL\MySQL Server 8.0\bin"
+3. MYSQL -u hr_user -p
+4. PASSWORD- 
+5 WELCOME ---- RUN  ONLY SELECT QUERRIES */
+
+
+
+# 49. Grant INSERT permission only on attendance table.
+-- GIVE PERMISSION
+GRANT INSERT  ON MAJ_PRO.ATTENDANCE  TO 'hr_user'@'localhost';
+-- REFERESH
+FLUSH PRIVILEGES;
+
+
+
+
+
+# 50.  Revoke DELETE permission from a user.
+
+-- GIVE PERMISSION FOR DELETE
+GRANT DELETE ON MAJ_PRO.* TO 'hr_user'@'localhost';
+-- REFRESH
+FLUSH PRIVILEGES;
+
+
+-- REVOKE DELETE PERMISSION
+REVOKE DELETE ON MAJ_PRO.* FROM 'hr_user'@'localhost';
+
+-- REFRESH
+FLUSH PRIVILEGES;
+
+
+
+
+
+# ----------------------------------Real-Time Scenario-Based (Interview) -------------------------------------------------
+
+# 51.  What happens if department is deleted but employees exist?
+/*    MySQL will block the deletion. You will get an error like: 
+"Cannot delete or update a parent row: a foreign key constraint fails."
+* ON DELETE CASCAE - If you delete the Department, MySQL will automatically delete all Employees belonging to that department as well.
+*/
+
+
+
+# 52.  How will you ensure salary consistency during payroll run?
+/* 1. Use Transactions (ACID Properties)
+2.  Implement Database Locking
+3. Use a "Payroll Snapshot" Table
+4. 4. Validation Check (Pre-Commit)
+
+*/
+
+
+
+# 53.  How will you handle partial failure in payroll processing? 
+/*   1. Use SQL Transactions (Commit & Rollback)
+2. Implementation Logic (Stored Procedure)
+*/
+
+
+# 54. Explain ACID properties using this project. 
+/*
+1.  Atomicity (All or Nothing)
+2. Consistency (Valid State)
+3. Isolation (Independence)
+4. Durability (Permanent)
+
+*/
+
+# 55.  How will you design audit logging for salary changes? 
+CREATE TABLE salary_audit (
+    audit_id INT AUTO_INCREMENT PRIMARY KEY,
+    emp_id INT,
+    old_salary DECIMAL(10,2),
+    new_salary DECIMAL(10,2),
+    changed_by VARCHAR(50), -- Captures the MySQL user
+    change_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    action_type VARCHAR(20) DEFAULT 'UPDATE'
+);
+
+
+
+
+
+# --------------------------------Coding Challenge (Advanced) ---------------------------------------------------------
+/* 56. Write a single query to display: 
+• Employee Name 
+• Department 
+• Total Salary 
+• Attendance Count 
+*/
+
+SELECT 
+    e.emp_name AS employee_name,
+    d.dept_name AS department,
+    SUM(BASIC+HRA+BONUS) AS total_salary,
+    COUNT(a.att_date) AS attendance_count
+FROM employees e
+JOIN departments d 
+    ON e.dept_id = d.dept_id
+LEFT JOIN salary s 
+    ON e.emp_id = s.emp_id
+LEFT JOIN attendance a 
+    ON e.emp_id = a.emp_id
+GROUP BY 
+    e.emp_id, e.emp_name, d.dept_name;
+
+
+
+# 57. Write a query to rank employees based on salary (without window functions). 
+SELECT 
+    e1.emp_id,
+    e1.emp_name,
+    e1.salary,
+    COUNT(e2.BASIC) + 1 AS salary_rank
+FROM employees e1
+LEFT JOIN employees e2
+    ON e2.salary > e1.salary
+GROUP BY 
+    e1.emp_id, e1.emp_name, e1.salary
+ORDER BY 
+    salary_rank;
+
+SELECT * FROM EMPLOYEES;
+SELECT * FROM DEPARTMENTS;
+SELECT * FROM SALARY; 
+
+
+
+# 58.  Find the top 2 highest paid employees in each department.
+
+SELECT EMP_NAME ,
+       DEPT_NAME,
+       SUM(BASIC + HRA + BONUS) AS TOTAL_SAL
+       FROM EMPLOYEES 
+       JOIN DEPARTMENTS ON
+       EMPLOYEES.DEPT_ID = DEPARTMENTS.DEPT_ID 
+       JOIN
+       SALARY ON
+       EMPLOYEES.EMP_ID = SALARY.EMP_ID GROUP BY EMP_NAME,DEPT_NAME ORDER BY TOTAL_SAL DESC;
+       
